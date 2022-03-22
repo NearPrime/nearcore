@@ -2,8 +2,6 @@ use clap::{AppSettings, Clap};
 
 use near_indexer::near_primitives::types::Gas;
 
-use tracing_subscriber::EnvFilter;
-
 /// NEAR Indexer Example
 /// Watches for stream of blocks from the chain
 #[derive(Clap, Debug)]
