@@ -43,4 +43,10 @@ RUN apt-get update -qq && apt-get install -y \
 COPY scripts/run_docker.sh /usr/local/bin/run.sh
 COPY --from=build /tmp/target/release/neard /usr/local/bin/
 
-CMD ["/usr/local/bin/run.sh"]
+RUN     neard --home ~/.near init --chain-id mainnet --download-genesis --download-config
+
+RUN     rm ~/.near/config.json && wget https://s3-us-west-1.amazonaws.com/build.nearprotocol.com/nearcore-deploy/mainnet/config.json -P ~/.near/
+
+ENTRYPOINT [ "neard", "--home", "/root/.near", "run" ]
+
+

@@ -24,3 +24,4 @@ echo "Telemetry: ${TELEMETRY_URL}"
 echo "Bootnodes: ${BOOT_NODES}"
 
 exec neard "$NEARD_FLAGS" run ${TELEMETRY_URL:+--telemetry-url="$TELEMETRY_URL"} ${BOOT_NODES:+--boot-nodes="$BOOT_NODES"} "$@"
+
