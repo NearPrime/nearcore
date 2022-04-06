@@ -44,8 +44,11 @@ COPY --from=build /tmp/neard /usr/local/bin/
 
 RUN     neard --home ~/.near init --chain-id mainnet --download-genesis --download-config
 
-RUN     rm ~/.near/config.json ~/.near/genesis.json 
+RUN     rm ~/.near/config.json ~/.near/genesis.json  
 # wget https://s3-us-west-1.amazonaws.com/build.nearprotocol.com/nearcore-deploy/mainnet/config.json -P ~/.near/
+
+ARG config_json=""
+ARG genesis_json=""
 
 ENTRYPOINT [ "neard", "--home", "/root/.near", "run" ]
 
