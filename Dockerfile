@@ -27,9 +27,8 @@ WORKDIR /near
 COPY . .
 
 ENV PORTABLE=ON
-ARG make_target=
-RUN make CARGO_TARGET_DIR=/tmp/target \
-         "${make_target:?make_target not set}"
+RUN make release && cp /near/target/release/neard /tmp/
+
 
 # Actual image
 FROM ubuntu:18.04
@@ -37,15 +36,16 @@ FROM ubuntu:18.04
 EXPOSE 3030 24567
 
 RUN apt-get update -qq && apt-get install -y \
-    libssl-dev ca-certificates \
+    libssl-dev ca-certificates wget\
     && rm -rf /var/lib/apt/lists/*
 
 COPY scripts/run_docker.sh /usr/local/bin/run.sh
-COPY --from=build /tmp/target/release/neard /usr/local/bin/
+COPY --from=build /tmp/neard /usr/local/bin/
 
 RUN     neard --home ~/.near init --chain-id mainnet --download-genesis --download-config
 
-RUN     rm ~/.near/config.json && wget https://s3-us-west-1.amazonaws.com/build.nearprotocol.com/nearcore-deploy/mainnet/config.json -P ~/.near/
+RUN     rm ~/.near/config.json ~/.near/genesis.json 
+# wget https://s3-us-west-1.amazonaws.com/build.nearprotocol.com/nearcore-deploy/mainnet/config.json -P ~/.near/
 
 ENTRYPOINT [ "neard", "--home", "/root/.near", "run" ]
 
