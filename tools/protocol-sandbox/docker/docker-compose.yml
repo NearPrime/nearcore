@@ -1,0 +1,73 @@
+version: "3.9"
+services:
+  validator-1:
+    image: nearcore_local_test:latest
+    build:
+      context: ../../../
+      dockerfile: ../../../Dockerfile
+      cache_from:
+        - nearcore_local_test:latest
+    volumes:
+      - ../configs/ta_a:/srv/near
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.2
+    ports:
+      - "3030:3030"
+      - "24567:24567"
+
+
+  validator-2:
+    image: nearcore_local_test:latest
+    build:
+      context: ../../../
+      dockerfile: ../../../Dockerfile
+      cache_from:
+        - nearcore_local_test:latest
+    volumes:
+      - ../configs/ta_b:/srv/near
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.3
+    ports:
+      - "3031:3030"
+      - "24568:24567"
+
+
+  validator-3:
+    image: nearcore_local_test:latest
+    build:
+      context: ../../../
+      dockerfile: ../../../Dockerfile
+      cache_from:
+        - nearcore_local_test:latest      
+    volumes:
+      - ../configs/ta_c:/srv/near
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.4
+    ports:
+      - "3032:3030"
+      - "24569:24567"
+      
+  validator-4:
+    image: nearcore_local_test:latest
+    build:
+      context: ../../../
+      dockerfile: ../../../Dockerfile
+      cache_from:
+        - nearcore_local_test:latest
+    volumes:
+      - ../configs/ta_d:/srv/near
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.5
+    ports:
+      - "3033:3030"
+      - "24570:24567"
+      
+networks:
+  back-tier:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
