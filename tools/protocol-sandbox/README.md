@@ -4,11 +4,15 @@
     ```bash
     cd ../../../ docker build -f tools/protocol-sandbox/docker/Dockerfile -t nearcore_local_test:latest .
     ```
-2. Run the docker compose file from within the `tools/protocol-sandbox/docker` directory
+2. Build the contract helper image
+    ``` bash 
+    docker build -f tools/protocol-sandbox/contract-helper/Dockerfile -t nearcore_local_contract_helper:latest .
+    ```
+3. Run the docker compose file from within the `tools/protocol-sandbox/docker` directory
     ```bash
     docker-compose up -d 
     ```
-3. To stop the services run
+4. To stop the services run
     ```bash
     docker-compose down
     ```
