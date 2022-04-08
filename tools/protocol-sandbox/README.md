@@ -6,7 +6,7 @@
     ```
 2. Build the contract helper image
     ``` bash 
-    docker build -f tools/protocol-sandbox/contract-helper/Dockerfile -t nearcore_local_contract_helper:latest .
+    docker build -f tools/protocol-sandbox/docker/contract-helper/Dockerfile -t nearcore_local_contract_helper:latest .
     ```
 3. Run the docker compose file from within the `tools/protocol-sandbox/docker` directory
     ```bash

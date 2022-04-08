@@ -69,8 +69,8 @@ services:
   contract-helper:
     image: nearcore_local_contract_helper:latest
     build:
-      context: ../contract-helper/
-      dockerfile: ../contract-helper/Dockerfile
+      context: ./contract-helper/
+      dockerfile: ./contract-helper/Dockerfile
       cache_from:
         - nearcore_local_contract_helper:latest
       
