@@ -73,6 +73,9 @@ services:
       dockerfile: ./contract-helper/Dockerfile
       cache_from:
         - nearcore_local_contract_helper:latest
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.6
       
 networks:
   back-tier:
