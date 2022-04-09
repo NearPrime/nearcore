@@ -74,7 +74,7 @@ services:
       cache_from:
         - nearcore_local_contract_helper:latest
     volumes:
-      - ../configs/ta_a:.
+      - ../configs/ch_a:.
     command: ACCOUNT_CREATOR_KEY=$(cat validator_key.json | tr -d " \t\n\r") && echo "ACCOUNT_CREATOR_KEY=$ACCOUNT_CREATOR_KEY" >> .env
     networks:
       back-tier:
