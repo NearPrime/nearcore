@@ -75,7 +75,7 @@ services:
         - nearcore_local_contract_helper:latest
     volumes:
       - ../configs/ch_a:.
-    command: ACCOUNT_CREATOR_KEY=$(cat validator_key.json | tr -d " \t\n\r") && echo "ACCOUNT_CREATOR_KEY=$ACCOUNT_CREATOR_KEY" >> .env
+    command: ACCOUNT_CREATOR_KEY=$(cat validator_key.json | tr -d " \t\n\r") && echo "ACCOUNT_CREATOR_KEY=$$ACCOUNT_CREATOR_KEY" >> .env
     networks:
       back-tier:
         ipv4_address: 172.20.0.6
