@@ -79,6 +79,16 @@ services:
     networks:
       back-tier:
         ipv4_address: 172.20.0.6
+
+  near-wallet:
+    image: nearcore_local_wallet:latest
+    build: 
+      context: ./near-wallet/
+      dockerfile: ./near-wallet/Dockerfile
+      cache_from:
+        - nearcore_local_wallet:latest
+       
+
       
 networks:
   back-tier:
