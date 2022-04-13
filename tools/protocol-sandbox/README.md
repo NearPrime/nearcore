@@ -10,7 +10,7 @@
     ```
 3. Run the docker compose file from within the `tools/protocol-sandbox/docker` directory
     ```bash
-    docker-compose up -d 
+    docker-compose build && docker-compose up -d 
     ```
 4. To stop the services run
     ```bash

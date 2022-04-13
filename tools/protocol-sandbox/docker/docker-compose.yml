@@ -4,7 +4,9 @@ services:
     image: nearcore_local_test:latest
     build:
       context: ../../../
-      dockerfile: ../../../Dockerfile
+      args:
+        make_target: neard
+      dockerfile: ./Dockerfile
       cache_from:
         - nearcore_local_test:latest
     volumes:
@@ -21,7 +23,9 @@ services:
     image: nearcore_local_test:latest
     build:
       context: ../../../
-      dockerfile: ../../../Dockerfile
+      args:
+        make_target: neard
+      dockerfile: ./Dockerfile
       cache_from:
         - nearcore_local_test:latest
     volumes:
@@ -38,7 +42,9 @@ services:
     image: nearcore_local_test:latest
     build:
       context: ../../../
-      dockerfile: ../../../Dockerfile
+      args: 
+        make_target: neard
+      dockerfile: ./Dockerfile
       cache_from:
         - nearcore_local_test:latest      
     volumes:
@@ -54,7 +60,9 @@ services:
     image: nearcore_local_test:latest
     build:
       context: ../../../
-      dockerfile: ../../../Dockerfile
+      args:
+        make_target: neard
+      dockerfile: ./Dockerfile
       cache_from:
         - nearcore_local_test:latest
     volumes:
@@ -75,7 +83,6 @@ services:
         - nearcore_local_contract_helper:latest
     volumes:
       - ../configs/ch_a:.
-    command: ACCOUNT_CREATOR_KEY=$(cat validator_key.json | tr -d " \t\n\r") && echo "ACCOUNT_CREATOR_KEY=$$ACCOUNT_CREATOR_KEY" >> .env
     networks:
       back-tier:
         ipv4_address: 172.20.0.6
@@ -87,7 +94,11 @@ services:
       dockerfile: ./near-wallet/Dockerfile
       cache_from:
         - nearcore_local_wallet:latest
-       
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.7
+    ports:
+      - "3004:3004"
 
       
 networks:
