@@ -2,8 +2,8 @@ module.exports = {
     development: {
         username: 'helper',
         password: 'helper',
-        database: 'helper',
-        host: 'localhost',
+        database: 'accounts_development',
+        host: '172.20.0.8',
         dialect: 'postgres',
     },
     test: {

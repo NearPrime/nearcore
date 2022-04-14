@@ -26,6 +26,9 @@ services:
       - validator-2
       - validator-3
       - validator-4
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.8
 
 
   validator-1:
