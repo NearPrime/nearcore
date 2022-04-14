@@ -8,4 +8,4 @@ RUN yarn install --production
 COPY . .
 EXPOSE 3000
 RUN npm install --save sequelize
-RUN yarn
+
