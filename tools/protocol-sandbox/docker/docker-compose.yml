@@ -124,7 +124,7 @@ services:
       back-tier:
         ipv4_address: 172.20.0.7
     ports:
-      - "3004:3004"
+      - "3000:3004"
 
       
 networks:
