@@ -13,13 +13,13 @@ services:
       - '5432:5432'
     volumes: 
       - ./postgres-db:/docker-entrypoint-initdb.d/
-      - ./postgres-db/postgres.conf:/etc/postgresql/postgresql.conf
+      # - ./postgres-db/postgres.conf:/etc/postgresql/postgresql.conf
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
       timeout: 45s
       interval: 10s
       retries: 10
-    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    #command: postgres -c config_file=/etc/postgresql/postgresql.conf
 
   validator-1:
     image: nearcore_local_test:latest
