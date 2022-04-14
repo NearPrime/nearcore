@@ -12,7 +12,7 @@ services:
     ports:
       - '5432:5432'
     volumes: 
-      - ./postgres-db:/var/lib/postgresql/data
+      # - ./postgres-db:/var/lib/postgresql/data
       - ./postgres-db:/docker-entrypoint-initdb.d/
       - ./postgres-db/postgres.conf:/etc/postgresql/postgresql.conf
     healthcheck:
