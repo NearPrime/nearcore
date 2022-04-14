@@ -7,6 +7,7 @@ services:
     environment:
       - POSTGRES_USER=helper
       - POSTGRES_PASSWORD=helper
+      - POSTGRES_DB=accounts_development
       - APP_DB_USER=helper
       - APP_DB_PASS=helper
       - APP_DB_NAME=accounts_development
@@ -15,13 +16,13 @@ services:
     volumes: 
       - ./postgres-db:/docker-entrypoint-initdb.d/
       - ./postgres-db/data:/var/lib/postgresql/data
-      # - ./postgres-db/postgres.conf:/etc/postgresql/postgresql.conf
+      - ./postgres-db/postgres.conf:/etc/postgresql/postgresql.conf
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "helper" ]
       timeout: 45s
       interval: 10s
       retries: 10
-    #command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
 
   validator-1:
     image: nearcore_local_test:latest
