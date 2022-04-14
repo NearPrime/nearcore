@@ -25,7 +25,7 @@ testdir/
 .idea
 
 # Python env
-#.env
+.env
 *.pyc
 venv
 

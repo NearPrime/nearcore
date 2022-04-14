@@ -65,9 +65,9 @@
     1,
     20
   ],
-  "total_supply": "5200000000000000000000000000000000",
+  "total_supply": "7200000000000000000000000000000000",
   "num_blocks_per_year": 31536000,
-  "protocol_treasury_account": "test_a.near",
+  "protocol_treasury_account": "treasury.near",
   "fishermen_threshold": "10000000000000000000000000",
   "minimum_stake_divisor": 10,
   "shard_layout": {
@@ -164,6 +164,50 @@
       "AccessKey": {
         "account_id": "test_d.near",
         "public_key": "ed25519:EJjW1gc7cf167jecpjsYebvBPHrCsynx484BJBWzaQQV",
+        "access_key": {
+          "nonce": 0,
+          "permission": "FullAccess"
+        }
+      }
+    },
+    {
+      "Account": {
+        "account_id": "registrar",
+        "account": {
+          "amount": "1000000000000000000000000000000000",
+          "locked": "0",
+          "code_hash": "11111111111111111111111111111111",
+          "storage_usage": 0,
+          "version": "V1"
+        }
+      }
+    },
+    {
+      "AccessKey": {
+        "account_id": "registrar",
+        "public_key": "ed25519:CWeQFspJWNjYWiHfoekdmbJjPjwkxTxj3wdSMaHdvyVm",
+        "access_key": {
+          "nonce": 0,
+          "permission": "FullAccess"
+        }
+      }
+    },
+    {
+      "Account": {
+        "account_id": "treasury.near",
+        "account": {
+          "amount": "1000000000000000000000000000000000",
+          "locked": "0",
+          "code_hash": "11111111111111111111111111111111",
+          "storage_usage": 0,
+          "version": "V1"
+        }
+      }
+    },
+    {
+      "AccessKey": {
+        "account_id": "treasury.near",
+        "public_key": "ed25519:7a7FAxJzj64TDmfTELg5vJ5LWDEPc8yH9VriDZgYL9A5",
         "access_key": {
           "nonce": 0,
           "permission": "FullAccess"

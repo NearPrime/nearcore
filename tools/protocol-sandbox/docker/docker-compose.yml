@@ -21,17 +21,15 @@ services:
       timeout: 45s
       interval: 10s
       retries: 10
+    depends_on: 
+      - validator-1
+      - validator-2
+      - validator-3
+      - validator-4
 
 
   validator-1:
-    image: nearcore_local_test:latest
-    build:
-      context: ../../../
-      args:
-        make_target: neard
-      dockerfile: ./Dockerfile
-      cache_from:
-        - nearcore_local_test:latest
+    image: quantiksolutions/near-core:latest
     volumes:
       - ../configs/ta_a:/srv/near
     networks:
@@ -43,14 +41,7 @@ services:
 
 
   validator-2:
-    image: nearcore_local_test:latest
-    build:
-      context: ../../../
-      args:
-        make_target: neard
-      dockerfile: ./Dockerfile
-      cache_from:
-        - nearcore_local_test:latest
+    image: quantiksolutions/near-core:latest
     volumes:
       - ../configs/ta_b:/srv/near
     networks:
@@ -62,14 +53,7 @@ services:
 
 
   validator-3:
-    image: nearcore_local_test:latest
-    build:
-      context: ../../../
-      args: 
-        make_target: neard
-      dockerfile: ./Dockerfile
-      cache_from:
-        - nearcore_local_test:latest      
+    image: quantiksolutions/near-core:latest   
     volumes:
       - ../configs/ta_c:/srv/near
     networks:
@@ -80,14 +64,7 @@ services:
       - "24569:24567"
       
   validator-4:
-    image: nearcore_local_test:latest
-    build:
-      context: ../../../
-      args:
-        make_target: neard
-      dockerfile: ./Dockerfile
-      cache_from:
-        - nearcore_local_test:latest
+    image: quantiksolutions/near-core:latest
     volumes:
       - ../configs/ta_d:/srv/near
     networks:
@@ -102,18 +79,22 @@ services:
     image: nearcore_local_contract_helper:latest
     build:
       context: ./contract-helper/
-      dockerfile: ./contract-helper/Dockerfile
+      dockerfile: ./Dockerfile
       cache_from:
         - nearcore_local_contract_helper:latest
     env_file:
       - ./contract-helper/.env
     depends_on:
       - db
+      - validator-1
+      - validator-2
+      - validator-3
+      - validator-4
     networks:
       back-tier:
         ipv4_address: 172.20.0.6
     ports:
-      - "8080:3000"
+      - "3000:3000"
     command: yarn start
     
 
@@ -121,16 +102,18 @@ services:
     image: nearcore_local_wallet:latest
     build: 
       context: ./near-wallet/
-      dockerfile: ./near-wallet/Dockerfile
+      dockerfile: ./Dockerfile
       cache_from:
         - nearcore_local_wallet:latest
     networks:
       back-tier:
         ipv4_address: 172.20.0.7
     ports:
-      - "3000:3004"
+      - "3004:3004"
+    depends_on:
+      - contract-helper
 
-      
+
 networks:
   back-tier:
     ipam:
