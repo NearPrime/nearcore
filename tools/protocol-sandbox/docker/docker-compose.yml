@@ -16,13 +16,12 @@ services:
     volumes: 
       - ./postgres-db:/docker-entrypoint-initdb.d/
       - ./postgres-db/data:/var/lib/postgresql/data
-      #- ./postgres-db/postgres.conf:/etc/postgresql/postgresql.conf
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "helper" ]
       timeout: 45s
       interval: 10s
       retries: 10
-    #command: postgres -c config_file=/etc/postgresql/postgresql.conf
+
 
   validator-1:
     image: nearcore_local_test:latest
@@ -98,20 +97,22 @@ services:
       - "3033:3030"
       - "24570:24567"
 
+
   contract-helper:
     image: nearcore_local_contract_helper:latest
     build:
       context: ./contract-helper/
-      dockerfile: ./contract-helper/Dockerfile.app
+      dockerfile: ./contract-helper/Dockerfile
       cache_from:
         - nearcore_local_contract_helper:latest
-    environment:
-      - DATABASE_URL=postgres://postgres:postgres@users-service-db:5432/db?charset=UTF8
-    # volumes:
-    #   - ../configs/ch_a:.
+    depends_on:
+      - db
     networks:
       back-tier:
         ipv4_address: 172.20.0.6
+    ports:
+      - "8080:3000"
+
 
   near-wallet:
     image: nearcore_local_wallet:latest
@@ -133,6 +134,3 @@ networks:
       config:
         - subnet: 172.20.0.0/24
 
-# volumes:
-#   db:
-#     driver: local
