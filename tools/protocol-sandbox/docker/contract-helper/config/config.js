@@ -3,7 +3,7 @@ module.exports = {
         username: 'helper',
         password: 'helper',
         database: 'accounts_development',
-        host: '0.0.0.0',
+        host: '127.0.0.1',
         dialect: 'postgres',
     },
     test: {
