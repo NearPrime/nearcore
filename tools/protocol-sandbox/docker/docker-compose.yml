@@ -105,6 +105,8 @@ services:
       dockerfile: ./contract-helper/Dockerfile
       cache_from:
         - nearcore_local_contract_helper:latest
+    env_file:
+      - ./contract-helper/.env
     depends_on:
       - db
     networks:
@@ -112,7 +114,8 @@ services:
         ipv4_address: 172.20.0.6
     ports:
       - "8080:3000"
-
+    command: yarn start
+    
 
   near-wallet:
     image: nearcore_local_wallet:latest
