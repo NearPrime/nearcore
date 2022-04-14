@@ -1,13 +1,13 @@
 ### Setup
 
-1. To build the docker image this command will.
+~~1. To build the docker image this command will.
     ```bash
     cd ../../../ && docker build -f tools/protocol-sandbox/docker/Dockerfile -t nearcore_local_test:latest .
-    ```
-2. Build the contract helper image from within the `tools/protocol-sandbox/docker/contract-helper` directory.
+    ```~~
+~~2. Build the contract helper image from within the `tools/protocol-sandbox/docker/contract-helper` directory.
     ``` bash 
     docker build -f Dockerfile -t nearcore_local_contract_helper:latest .
-    ```
+    ```~~
 3. Run the docker compose file from within the `tools/protocol-sandbox/docker` directory. You can pass the `--build` flag to the following command to force build the services with a build tag.
     ```bash
     docker-compose up -d 

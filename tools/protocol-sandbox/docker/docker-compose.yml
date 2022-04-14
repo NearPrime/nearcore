@@ -30,7 +30,6 @@ services:
       back-tier:
         ipv4_address: 172.20.0.8
 
-
   validator-1:
     image: quantiksolutions/near-core:latest
     volumes:
@@ -41,8 +40,6 @@ services:
     ports:
       - "3030:3030"
       - "24567:24567"
-
-
   validator-2:
     image: quantiksolutions/near-core:latest
     volumes:
@@ -53,8 +50,6 @@ services:
     ports:
       - "3031:3030"
       - "24568:24567"
-
-
   validator-3:
     image: quantiksolutions/near-core:latest   
     volumes:
@@ -77,7 +72,6 @@ services:
       - "3033:3030"
       - "24570:24567"
 
-
   contract-helper:
     image: nearcore_local_contract_helper:latest
     build:
@@ -99,7 +93,6 @@ services:
     ports:
       - "3000:3000"
     command: yarn start
-    
 
   near-wallet:
     image: nearcore_local_wallet:latest
@@ -115,7 +108,6 @@ services:
       - "3004:3004"
     depends_on:
       - contract-helper
-
 
 networks:
   back-tier:
