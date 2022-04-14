@@ -12,7 +12,6 @@ services:
     ports:
       - '5432:5432'
     volumes: 
-      # - ./postgres-db:/var/lib/postgresql/data
       - ./postgres-db:/docker-entrypoint-initdb.d/
       - ./postgres-db/postgres.conf:/etc/postgresql/postgresql.conf
     healthcheck:
@@ -20,7 +19,7 @@ services:
       timeout: 45s
       interval: 10s
       retries: 10
-    
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
 
   validator-1:
     image: nearcore_local_test:latest
