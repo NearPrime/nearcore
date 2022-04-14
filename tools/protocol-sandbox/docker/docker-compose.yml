@@ -1,5 +1,27 @@
 version: "3.9"
 services:
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=helper
+      - POSTGRES_PASSWORD=helper
+      - APP_DB_USER=helper
+      - APP_DB_PASS=helper
+      - APP_DB_NAME=accounts_development
+    ports:
+      - '5432:5432'
+    volumes: 
+      - ./postgres-db:/var/lib/postgresql/data
+      - ./postgres-db:/docker-entrypoint-initdb.d/
+      - ./postgres-db/postgres.conf:/etc/postgresql/postgresql.conf
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    
+
   validator-1:
     image: nearcore_local_test:latest
     build:
@@ -81,6 +103,8 @@ services:
       dockerfile: ./contract-helper/Dockerfile.app
       cache_from:
         - nearcore_local_contract_helper:latest
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@users-service-db:5432/db?charset=UTF8
     volumes:
       - ../configs/ch_a:.
     networks:
@@ -106,3 +130,7 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/24
+
+volumes:
+  db:
+    driver: local

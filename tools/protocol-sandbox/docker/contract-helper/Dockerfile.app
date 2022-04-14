@@ -11,13 +11,10 @@ RUN apt-get update -qq && apt-get install -y \
 
 RUN npm install -g yarn
 
-COPY /scripts/postgresql.conf /etc/postgresql/10/main/postgresql.conf
-COPY /scripts/init_postgres.sh /etc/my_init.d/
-
 # contract-helper
-COPY . /near-contract-helper/
-WORKDIR /near-contract-helper
+WORKDIR /usr/app
+COPY . .
 RUN yarn
-RUN sudo su
-RUN mkdir -p /etc/service/contract-helper
+RUN yarn migrate
+RUN node app.js >> /var/log/contract-helper.log 2>&1
 COPY /scripts/run.sh /etc/service/contract-helper/run
