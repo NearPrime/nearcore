@@ -16,5 +16,5 @@ WORKDIR /usr/app
 COPY . .
 RUN yarn
 RUN yarn migrate
-RUN node app.js >> /var/log/contract-helper.log 2>&1
+# RUN node app.js >> /var/log/contract-helper.log 2>&1
 COPY /scripts/run.sh /etc/service/contract-helper/run

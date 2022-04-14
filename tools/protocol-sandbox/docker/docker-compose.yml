@@ -2,6 +2,7 @@ version: "3.9"
 services:
   db:
     image: postgres:14.1-alpine
+    container_name: pg-docker
     restart: always
     environment:
       - POSTGRES_USER=helper
@@ -13,6 +14,7 @@ services:
       - '5432:5432'
     volumes: 
       - ./postgres-db:/docker-entrypoint-initdb.d/
+      - ./postgres-db/data:/var/lib/postgresql/data
       # - ./postgres-db/postgres.conf:/etc/postgresql/postgresql.conf
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "helper" ]
