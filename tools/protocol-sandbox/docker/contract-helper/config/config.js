@@ -3,7 +3,7 @@ module.exports = {
         username: 'helper',
         password: 'helper',
         database: 'accounts_development',
-        host: '127.0.0.1',
+        host: 'host.docker.internal',
         dialect: 'postgres',
     },
     test: {
