@@ -131,6 +131,6 @@ networks:
       config:
         - subnet: 172.20.0.0/24
 
-volumes:
-  db:
-    driver: local
+# volumes:
+#   db:
+#     driver: local
