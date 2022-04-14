@@ -104,8 +104,8 @@ services:
         - nearcore_local_contract_helper:latest
     environment:
       - DATABASE_URL=postgres://postgres:postgres@users-service-db:5432/db?charset=UTF8
-    volumes:
-      - ../configs/ch_a:.
+    # volumes:
+    #   - ../configs/ch_a:.
     networks:
       back-tier:
         ipv4_address: 172.20.0.6
