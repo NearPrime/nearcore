@@ -15,7 +15,7 @@ services:
       - ./postgres-db:/docker-entrypoint-initdb.d/
       # - ./postgres-db/postgres.conf:/etc/postgresql/postgresql.conf
     healthcheck:
-      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "helper" ]
       timeout: 45s
       interval: 10s
       retries: 10
