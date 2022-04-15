@@ -1,59 +1,35 @@
 version: "3.9"
 services:
-  db:
-    image: postgres:14.1-alpine
-    container_name: pg-docker
-    restart: always
-    environment:
-      - POSTGRES_USER=helper
-      - POSTGRES_PASSWORD=helper
-      - POSTGRES_DB=accounts_development
-      - APP_DB_USER=helper
-      - APP_DB_PASS=helper
-      - APP_DB_NAME=accounts_development
-    ports:
-      - '5432:5432'
-    volumes: 
-      - ./postgres-db:/docker-entrypoint-initdb.d/
-      - ./postgres-db/data:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "helper" ]
-      timeout: 45s
-      interval: 10s
-      retries: 10
-    depends_on: 
-      - validator-1
-      - validator-2
-      - validator-3
-      - validator-4
-    networks:
-      back-tier:
-        ipv4_address: 172.20.0.8
-
-  validator-1:
+  # -------------------- Node Services --------------------
+  validator-a:
+    container_name: validator-a
     image: quantiksolutions/near-core:latest
     volumes:
-      - ../configs/ta_a:/srv/near
+      - ../configs/validator_a:/srv/near
     networks:
       back-tier:
         ipv4_address: 172.20.0.2
     ports:
       - "3030:3030"
       - "24567:24567"
-  validator-2:
+
+  validator-b:
+    container_name: validator-b
     image: quantiksolutions/near-core:latest
     volumes:
-      - ../configs/ta_b:/srv/near
+      - ../configs/validator_b:/srv/near
     networks:
       back-tier:
         ipv4_address: 172.20.0.3
     ports:
       - "3031:3030"
       - "24568:24567"
-  validator-3:
+
+  validator-c:
+    container_name: validator-c
     image: quantiksolutions/near-core:latest   
     volumes:
-      - ../configs/ta_c:/srv/near
+      - ../configs/validator_c:/srv/near
     networks:
       back-tier:
         ipv4_address: 172.20.0.4
@@ -61,10 +37,12 @@ services:
       - "3032:3030"
       - "24569:24567"
       
-  validator-4:
+
+  validator-d:
+    container_name: validator-d
     image: quantiksolutions/near-core:latest
     volumes:
-      - ../configs/ta_d:/srv/near
+      - ../configs/validator_d:/srv/near
     networks:
       back-tier:
         ipv4_address: 172.20.0.5
@@ -72,38 +50,100 @@ services:
       - "3033:3030"
       - "24570:24567"
 
-  contract-helper:
-    image: nearcore_local_contract_helper:latest
+  indexer-for-explorer:
+    container_name: indexer-for-explorer
+    image: quantiksolutions/near-indexer-for-explorer:latest
     build:
-      context: ./contract-helper/
+      context: ../services/near-indexer-for-explorer/
       dockerfile: ./Dockerfile
-      cache_from:
-        - nearcore_local_contract_helper:latest
-    env_file:
-      - ./contract-helper/.env
-    depends_on:
-      - db
-      - validator-1
-      - validator-2
-      - validator-3
-      - validator-4
+#      cache_from:
+#        - quantiksolutions/near-indexer-for-explorer:latest
+    environment:
+      - DATABASE_URL=DATABASE_URL=postgres://explorer:explorer@172.20.0.7/explorer
+    volumes:
+      - ../configs/archive:/srv/near
     networks:
       back-tier:
         ipv4_address: 172.20.0.6
     ports:
+      - "3034:3030"
+      - "24571:24567"
+    depends_on:
+      - validator-a
+      - validator-b
+      - validator-c
+      - validator-d
+      - db
+  # ---------------------------------------------------------
+  # -------------------- Helper Services --------------------
+  db:
+    container_name: db
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=helper
+      - POSTGRES_PASSWORD=helper
+      - POSTGRES_DB=accounts_development
+      - CONTRACT_HELPER_DB_USER=helper
+      - CONTRACT_HELPER_DB_PASS=helper
+      - CONTRACT_HELPER_DB_NAME=accounts_development
+      - EXPLORER_DB_USER=explorer
+      - EXPLORER_DB_PASS=explorer
+      - EXPLORER_DB_NAME=explorer
+    ports:
+      - '5432:5432'
+    volumes:
+      - ../services/postgres-db:/docker-entrypoint-initdb.d/
+      - ../services/postgres-db/data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "helper" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    depends_on:
+      - validator-a
+      - validator-b
+      - validator-c
+      - validator-d
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.7
+
+  contract-helper:
+    container_name: contract-helper
+    image: nearcore_local_contract_helper:latest
+    build:
+      context: ../services/contract-helper/
+      dockerfile: ./Dockerfile
+      cache_from:
+        - nearcore_local_contract_helper:latest
+    env_file:
+      - ../services/contract-helper/.env
+    depends_on:
+      - db
+      - validator-a
+      - validator-b
+      - validator-c
+      - validator-d
+      - indexer-for-explorer
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.8
+    ports:
       - "3000:3000"
     command: yarn start
 
+
   near-wallet:
     image: nearcore_local_wallet:latest
-    build: 
-      context: ./near-wallet/
+    build:
+      context: ../services/near-wallet/
       dockerfile: ./Dockerfile
       cache_from:
         - nearcore_local_wallet:latest
     networks:
       back-tier:
-        ipv4_address: 172.20.0.7
+        ipv4_address: 172.20.0.9
     ports:
       - "3004:3004"
     depends_on:

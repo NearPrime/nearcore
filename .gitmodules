@@ -1,0 +1,3 @@
+[submodule "tools/protocol-sandbox/services/near-indexer-for-explorer"]
+	path = tools/protocol-sandbox/services/near-indexer-for-explorer
+	url = git@github.com:near/near-indexer-for-explorer.git
