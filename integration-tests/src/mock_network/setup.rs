@@ -14,10 +14,11 @@ use near_epoch_manager::EpochManager;
 use near_network::test_utils::NetworkRecipient;
 use near_network::types::NetworkClientMessages;
 use near_primitives::network::PeerId;
+use near_primitives::state_part::PartId;
 use near_primitives::syncing::get_num_state_parts;
 use near_primitives::types::BlockHeight;
-use near_store::db::TestDB;
-use near_store::{create_store, Store};
+use near_store::create_store;
+use near_store::test_utils::create_test_store;
 use near_telemetry::TelemetryActor;
 use nearcore::{get_store_path, NearConfig, NightshadeRuntime};
 use regex::Regex;
@@ -37,7 +38,7 @@ fn setup_runtime(
     in_memory_storage: bool,
 ) -> Arc<NightshadeRuntime> {
     let store = if in_memory_storage {
-        Store::new(Arc::new(TestDB::new()))
+        create_test_store()
     } else {
         let path = get_store_path(home_dir);
         create_store(&path)
@@ -61,10 +62,15 @@ fn setup_mock_peer_manager_actor(
     mode: MockNetworkMode,
     network_delay: Duration,
     target_height: Option<BlockHeight>,
+    save_trie_changes: bool,
 ) -> MockPeerManagerActor {
-    let chain =
-        Chain::new_for_view_client(runtime, chain_genesis, DoomslugThresholdMode::NoApprovals)
-            .unwrap();
+    let chain = Chain::new_for_view_client(
+        runtime,
+        chain_genesis,
+        DoomslugThresholdMode::NoApprovals,
+        save_trie_changes,
+    )
+    .unwrap();
     let chain_height = chain.head().unwrap().height;
     let target_height = min(target_height.unwrap_or(chain_height), chain_height);
 
@@ -125,7 +131,7 @@ impl FromStr for MockNetworkMode {
 pub fn setup_mock_network(
     client_home_dir: &Path,
     network_home_dir: &Path,
-    config: &NearConfig,
+    config: NearConfig,
     mode: MockNetworkMode,
     network_delay: Duration,
     client_start_height: Option<BlockHeight>,
@@ -155,10 +161,16 @@ pub fn setup_mock_network(
     if let Some(start_height) = client_start_height {
         info!(target:"mock_network", "Preparing client data dir to be able to start at the specified start height {}", start_height);
         #[cfg(feature = "mock_network")]
-        let mut chain_store =
-            ChainStore::new(client_runtime.get_store(), config.genesis.config.genesis_height);
-        let mut network_chain_store =
-            ChainStore::new(mock_network_runtime.get_store(), config.genesis.config.genesis_height);
+        let mut chain_store = ChainStore::new(
+            client_runtime.get_store(),
+            config.genesis.config.genesis_height,
+            !config.client_config.archive,
+        );
+        let mut network_chain_store = ChainStore::new(
+            mock_network_runtime.get_store(),
+            config.genesis.config.genesis_height,
+            !config.client_config.archive,
+        );
 
         let network_tail_height = network_chain_store.tail().unwrap();
         let network_head_height = network_chain_store.head().unwrap().height;
@@ -176,7 +188,11 @@ pub fn setup_mock_network(
         );
         let hash = network_chain_store.get_block_hash_by_height(start_height).unwrap();
         if !mock_network_runtime.is_next_block_epoch_start(&hash).unwrap() {
-            panic!("start height must be the last block of an epoch");
+            let epoch_start_height = mock_network_runtime.get_epoch_start_height(&hash).unwrap();
+            panic!(
+                "start height must be the last block of an epoch, try using {} instead",
+                epoch_start_height - 1
+            );
         }
 
         // copy chain info
@@ -237,16 +253,14 @@ pub fn setup_mock_network(
                                 shard_id,
                                 &next_hash1,
                                 &state_root1,
-                                part_id,
-                                num_parts,
+                                PartId::new(part_id, num_parts),
                             )
                             .unwrap();
                         client_runtime1
                             .apply_state_part(
                                 shard_id,
                                 &state_root1,
-                                part_id,
-                                num_parts,
+                                PartId::new(part_id, num_parts),
                                 &state_part,
                                 &mock_network_runtime1
                                     .get_epoch_id_from_prev_block(&hash1)
@@ -300,6 +314,7 @@ pub fn setup_mock_network(
     let arbiter = Arbiter::new();
     let client_actor1 = client_actor.clone();
     let genesis_config = config.genesis.config.clone();
+    let archival = config.client_config.archive;
     let mock_network_actor =
         MockPeerManagerActor::start_in_arbiter(&arbiter.handle(), move |_ctx| {
             setup_mock_peer_manager_actor(
@@ -311,8 +326,20 @@ pub fn setup_mock_network(
                 mode,
                 network_delay,
                 target_height,
+                !archival,
             )
         });
+    // for some reason, with "test_features", start_http requires PeerManagerActor,
+    // we are not going to run start_mock_network with test_features, so let's disable that for now
+    #[cfg(not(feature = "test_features"))]
+    if let Some(rpc_config) = config.rpc_config {
+        near_jsonrpc::start_http(
+            rpc_config,
+            config.genesis.config,
+            client_actor.clone(),
+            view_client.clone(),
+        );
+    }
     network_adapter.set_recipient(mock_network_actor.clone().recipient());
     (mock_network_actor, client_actor, view_client)
 }
@@ -435,7 +462,7 @@ mod test {
             let (_mock_network, _client, view_client) = setup_mock_network(
                 dir1.path().clone(),
                 dir.path().clone(),
-                &near_config1,
+                near_config1,
                 MockNetworkMode::NoNewBlocks,
                 Duration::from_millis(10),
                 Some(10),
