@@ -3557,7 +3557,8 @@ name = "near-network"
 version = "0.0.0"
 dependencies = [
  "actix",
- "borsh 0.9.2",
+ "anyhow",
+ "borsh",
  "bytes",
  "bytesize",
  "conqueue",
