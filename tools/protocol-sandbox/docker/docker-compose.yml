@@ -15,7 +15,7 @@ services:
       - '5432:5432'
     volumes: 
       - ./postgres-db:/docker-entrypoint-initdb.d/
-      - ./postgres-db/data:/var/lib/postgresql/data
+      # - ./postgres-db/data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "helper" ]
       timeout: 45s
@@ -29,9 +29,27 @@ services:
     networks:
       back-tier:
         ipv4_address: 172.20.0.8
+  
+  local-indexer:
+    image: nearcore_local_indexer:latest
+    container_name: local-indexer
+    build: 
+      context: ./prime-indexer/
+      dockerfile: ./Dockerfile
+      cache_from:
+        - nearcore_local_indexer:latest
+    # volumes:
+    #  # - hostPath:containerPath:ro
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.9
+    ports:
+      - "3030:3030"
+    
 
   validator-1:
     image: quantiksolutions/near-core:latest
+    container_name: validator-1
     volumes:
       - ../configs/ta_a:/srv/near
     networks:
@@ -40,8 +58,10 @@ services:
     ports:
       - "3030:3030"
       - "24567:24567"
+
   validator-2:
     image: quantiksolutions/near-core:latest
+    container_name: validator-2
     volumes:
       - ../configs/ta_b:/srv/near
     networks:
@@ -50,8 +70,10 @@ services:
     ports:
       - "3031:3030"
       - "24568:24567"
+
   validator-3:
     image: quantiksolutions/near-core:latest   
+    container_name: validator-3
     volumes:
       - ../configs/ta_c:/srv/near
     networks:
@@ -63,6 +85,7 @@ services:
       
   validator-4:
     image: quantiksolutions/near-core:latest
+    container_name: validator-4
     volumes:
       - ../configs/ta_d:/srv/near
     networks:
@@ -74,6 +97,7 @@ services:
 
   contract-helper:
     image: nearcore_local_contract_helper:latest
+    container_name: contract-helper
     build:
       context: ./contract-helper/
       dockerfile: ./Dockerfile
@@ -96,6 +120,7 @@ services:
 
   near-wallet:
     image: nearcore_local_wallet:latest
+    container_name: near-wallet
     build: 
       context: ./near-wallet/
       dockerfile: ./Dockerfile

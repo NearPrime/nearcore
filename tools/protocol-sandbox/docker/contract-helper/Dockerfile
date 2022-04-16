@@ -1,10 +1,10 @@
 FROM node:14-alpine
 
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 
 WORKDIR /app
 COPY package*.json .
-RUN yarn install --development
+RUN yarn install --production
 COPY . .
 EXPOSE 3000
 
