@@ -1,4 +1,8 @@
 version: "3.9"
+x-services: &env
+  env_file:
+    - .env
+
 services:
   # -------------------- Node Services --------------------
   validator-a:
@@ -52,14 +56,14 @@ services:
 
   indexer-for-explorer:
     container_name: indexer-for-explorer
-    image: quantiksolutions/near-indexer-for-explorer:latest
+#    image: near-indexer-for-explorer:latest
     build:
       context: ../services/near-indexer-for-explorer/
       dockerfile: ./Dockerfile
-#      cache_from:
-#        - quantiksolutions/near-indexer-for-explorer:latest
+      cache_from:
+        - quantiksolutions/near-indexer-for-explorer:latest
     environment:
-      - DATABASE_URL=DATABASE_URL=postgres://explorer:explorer@172.20.0.7/explorer
+      - DATABASE_URL=postgres://explorer:explorer@172.20.0.7/explorer
     volumes:
       - ../configs/archive:/srv/near
     networks:
@@ -84,12 +88,18 @@ services:
       - POSTGRES_USER=helper
       - POSTGRES_PASSWORD=helper
       - POSTGRES_DB=accounts_development
-      - CONTRACT_HELPER_DB_USER=helper
-      - CONTRACT_HELPER_DB_PASS=helper
-      - CONTRACT_HELPER_DB_NAME=accounts_development
+      - CONTRACT_HELPER_DB_USER=contract_helper
+      - CONTRACT_HELPER_DB_PASS=contract_helper
+      - CONTRACT_HELPER_DB_NAME=contract_helper
       - EXPLORER_DB_USER=explorer
       - EXPLORER_DB_PASS=explorer
       - EXPLORER_DB_NAME=explorer
+      - ANALYTICS_DB_USER=analytics
+      - ANALYTICS_DB_PASS=analytics
+      - ANALYTICS_DB_NAME=analytics
+      - TELEMETRY_DB_USER=telemetry
+      - TELEMETRY_DB_PASS=telemetry
+      - TELEMETRY_DB_NAME=telemetry
     ports:
       - '5432:5432'
     volumes:
@@ -100,14 +110,23 @@ services:
       timeout: 45s
       interval: 10s
       retries: 10
-    depends_on:
-      - validator-a
-      - validator-b
-      - validator-c
-      - validator-d
     networks:
       back-tier:
         ipv4_address: 172.20.0.7
+
+  protocol-analytics:
+#    image: postgres:14.1-alpine
+    build:
+      context: ../services/near-analytics/
+      dockerfile: ./Dockerfile
+#      cache_from:
+#        - nearcore_local_contract_helper:latest
+    restart: always
+    environment:
+      - ANALYTICS_DATABASE_URL=postgres://analytics:analytics@172.20.0.7/analytics
+      - INDEXER_DATABASE_URL=postgres://explorer:explorer@172.20.0.7/explorer
+    depends_on:
+      - db
 
   contract-helper:
     container_name: contract-helper
@@ -117,8 +136,7 @@ services:
       dockerfile: ./Dockerfile
       cache_from:
         - nearcore_local_contract_helper:latest
-    env_file:
-      - ../services/contract-helper/.env
+    <<: *env
     depends_on:
       - db
       - validator-a
@@ -130,9 +148,67 @@ services:
       back-tier:
         ipv4_address: 172.20.0.8
     ports:
-      - "3000:3000"
+      - "3020:3000"
     command: yarn start
 
+
+  wamp:
+    <<: *env
+    build:
+      context: ../services/near-explorer/wamp
+      dockerfile: ./Dockerfile
+#      cache_from:
+#        - nearcore_local_contract_helper:latest
+    restart: always
+    environment:
+      - NEAR_EXPLORER_WAMP_BACKEND_SECRET=THIS_IS_LOCALHOST_SECRET
+    ports:
+      - "10000:8080"
+    depends_on:
+      - db
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.9
+
+
+  backend:
+    <<: *env
+    build:
+      context: ../services/near-explorer
+      dockerfile: backend/Dockerfile
+    restart: always
+    depends_on:
+      - wamp
+    environment:
+      - NEAR_EXPLORER_WAMP_PORT=8080
+      - NEAR_EXPLORER_WAMP_HOST=wamp
+      - NEAR_EXPLORER_WAMP_BACKEND_SECRET=THIS_IS_LOCALHOST_SECRET
+#    mem_limit: 1G
+    entrypoint: [ "npm", "run", "start" ]
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.10
+
+  frontend:
+    <<: *env
+    build:
+      context: ../services/near-explorer
+      dockerfile: frontend/Dockerfile
+    restart: always
+    depends_on:
+      - wamp
+    environment:
+      - PORT=3000
+      - NEAR_EXPLORER_WAMP_HOST=localhost
+      - NEAR_EXPLORER_WAMP_SSR_HOST=wamp
+      - NEAR_EXPLORER_WAMP_SSR_PORT=8080
+      - NEAR_EXPLORER_WAMP_BACKEND_SECRET=THIS_IS_LOCALHOST_SECRET
+    ports:
+      - "3000:3000"
+    command: [ "npm", "run", "start" ]
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.11
 
   near-wallet:
     image: nearcore_local_wallet:latest
@@ -143,7 +219,7 @@ services:
         - nearcore_local_wallet:latest
     networks:
       back-tier:
-        ipv4_address: 172.20.0.9
+        ipv4_address: 172.20.0.12
     ports:
       - "3004:3004"
     depends_on:

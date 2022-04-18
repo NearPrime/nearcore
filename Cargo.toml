@@ -44,7 +44,6 @@ members = [
     "genesis-tools/keypair-generator",
     "tools/delay_detector",
     "tools/indexer/example",
-    "tools/protocol-sandbox/services/near-indexer-for-explorer",
     "tools/restaked",
     "tools/restored-receipts-verifier",
     "tools/rpctypegen/core",
@@ -56,6 +55,10 @@ members = [
     "integration-tests",
     "utils/near-rate-limiter",
     "utils/near-cache",
+]
+
+exclude = [
+    "tools/protocol-sandbox/services/near-indexer-for-explorer",
 ]
 
 [workspace.metadata.workspaces]
