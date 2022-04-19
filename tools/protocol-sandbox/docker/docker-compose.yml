@@ -187,9 +187,8 @@ services:
       - NEAR_EXPLORER_WAMP_HOST=wamp
       - NEAR_EXPLORER_WAMP_BACKEND_SECRET=THIS_IS_LOCALHOST_SECRET
     mem_limit: 1G
-    # command: 
-    #   -  npm run start
-    entrypoint: ["npm", "run", "start"]
+    command: /bin/sh -c "run.sh"
+    # entrypoint: ["npm", "run", "start"]
     networks:
       back-tier:
         ipv4_address: 172.20.0.10 
