@@ -188,8 +188,6 @@ services:
       - NEAR_EXPLORER_WAMP_BACKEND_SECRET=THIS_IS_LOCALHOST_SECRET
     mem_limit: 1G
     command: 
-      - /bin/bash
-      - -c
       - |
         npm install --save sequelize -y  
         npx sequelize-cli migration:generate --name migration-skeleton 
