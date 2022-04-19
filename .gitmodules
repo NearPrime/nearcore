@@ -1,9 +1,9 @@
 [submodule "tools/protocol-sandbox/services/near-indexer-for-explorer"]
 	path = tools/protocol-sandbox/services/near-indexer-for-explorer
-	url = git@github.com:near/near-indexer-for-explorer.git
+	url = https://github.com/near/near-indexer-for-explorer.git
 [submodule "tools/protocol-sandbox/services/near-explorer"]
 	path = tools/protocol-sandbox/services/near-explorer
-	url = git@github.com:near/near-explorer.git
+	url = https://github.com/near/near-explorer.git
 [submodule "tools/protocol-sandbox/services/near-analytics"]
 	path = tools/protocol-sandbox/services/near-analytics
-	url = git@github.com:near/near-analytics.git
+	url = https://github.com/near/near-analytics.git
