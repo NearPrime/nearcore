@@ -187,7 +187,7 @@ services:
       - NEAR_EXPLORER_WAMP_HOST=wamp
       - NEAR_EXPLORER_WAMP_BACKEND_SECRET=THIS_IS_LOCALHOST_SECRET
     mem_limit: 1G
-    command: /bin/sh -c "run.sh"
+    # command: /bin/sh -c "run.sh"
     # entrypoint: ["npm", "run", "start"]
     networks:
       back-tier:
