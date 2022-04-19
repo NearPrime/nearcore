@@ -7,4 +7,4 @@ COPY package*.json .
 RUN yarn install --development
 COPY . .
 EXPOSE 3000
-
+RUN npx sequelize-cli migration:generate --name migration-skeleton

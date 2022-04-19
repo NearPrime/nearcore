@@ -149,9 +149,7 @@ services:
         ipv4_address: 172.20.0.8
     ports:
       - "3020:3000"
-    command: |
-      yarn migrate 
-      yarn start
+    command:  yarn start
 
   wamp:
     <<: *env
