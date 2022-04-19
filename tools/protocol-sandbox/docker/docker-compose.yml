@@ -181,7 +181,7 @@ services:
     restart: always
     depends_on:
       - wamp
-      - backend-migration
+      - db
     environment:
       - NEAR_EXPLORER_WAMP_PORT=8080
       - NEAR_EXPLORER_WAMP_HOST=wamp
