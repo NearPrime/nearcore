@@ -181,6 +181,7 @@ services:
     restart: always
     depends_on:
       - wamp
+      - backend-migration
     environment:
       - NEAR_EXPLORER_WAMP_PORT=8080
       - NEAR_EXPLORER_WAMP_HOST=wamp
@@ -190,6 +191,29 @@ services:
     networks:
       back-tier:
         ipv4_address: 172.20.0.10
+  
+  backend-migration:
+    <<: *env
+    container_name: near-explorer-backend-migration
+    build: 
+      context: ../services/near-explorer
+      dockerfile: backend/Dockerfile
+    restart: always
+    depends_on:
+      - wamp
+      - db
+    environment:
+      - NEAR_EXPLORER_WAMP_PORT=8080
+      - NEAR_EXPLORER_WAMP_HOST=wamp
+      - NEAR_EXPLORER_WAMP_BACKEND_SECRET=THIS_IS_LOCALHOST_SECRET
+    mem_limit: 1G
+    links:
+      - db
+    command: npm install --save sequelize -y && npx sequelize-cli migration:generate --name migration-skeleton 
+    networks:
+      back-tier:
+        ipv4_address: 172.20.0.10
+   
 
   frontend:
     <<: *env
