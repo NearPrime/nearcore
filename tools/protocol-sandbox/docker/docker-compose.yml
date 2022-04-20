@@ -138,7 +138,7 @@ services:
       cache_from:
         - nearcore_local_contract_helper:latest
     volumes:
-      - ../docker/.env:/app/.env
+      - .env:/app/.env
     depends_on:
       - db
       - validator-a
