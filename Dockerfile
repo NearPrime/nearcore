@@ -44,4 +44,7 @@ ENV RUST_LOG="debug,actix_web=info"
 
 COPY --from=build /tmp/target/release/neard /usr/local/bin/
 
-CMD ["/usr/local/bin/run.sh"]
+COPY    ./docker_entrypoint.sh ./docker_entrypoint.sh
+RUN     chmod +x ./docker_entrypoint.sh
+
+CMD ./docker_entrypoint.sh
