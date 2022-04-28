@@ -11,5 +11,9 @@ if [ "$NODE_TYPE" = "validator" ]; then
 
     aws ssm get-parameter --name $VALIDATOR_KEYS | jq -r '.Parameter.Value' > ~/.near/validator_key.json
 fi
-ls ~/.near
+
+ulimit -c unlimited
+
+ls ${NEAR_HOME}
+
 exec neard run 
