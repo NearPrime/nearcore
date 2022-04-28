@@ -42,6 +42,12 @@ RUN apt-get update -qq && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 ENV RUST_LOG="debug,actix_web=info"
 
+RUN     apt update -y && apt install unzip curl jq -y
+
+RUN     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN     unzip awscliv2.zip 
+RUN     ./aws/install
+
 COPY --from=build /tmp/target/release/neard /usr/local/bin/
 
 COPY    ./docker_entrypoint.sh ./docker_entrypoint.sh

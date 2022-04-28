@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
-
-NEAR_HOME=${NEAR_HOME:-/srv/near}
+mkdir ~/.near
+NEAR_HOME= ~/.near
 export NEAR_HOME
 
 aws ssm get-parameter --name $CONFIG | jq -r '.Parameter.Value' > ${NEAR_HOME}/config.json
@@ -13,7 +13,5 @@ if [ "$NODE_TYPE" = "validator" ]; then
 fi
 
 ulimit -c unlimited
-
-ls ${NEAR_HOME}
 
 exec neard run 
